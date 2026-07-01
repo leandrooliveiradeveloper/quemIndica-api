@@ -12,7 +12,9 @@ routers.delete('/selecoes/:id', SelecaoController.delete);
 routers.put('/selecoes/:id', SelecaoController.update); 
 
 //USUARIO
-routers.post('/CadastrarUsuario', UsuarioController.store);
-routers.get('/ObterUsuario/:id', UsuarioController.show);
+routers.post('/Usuario/CadastrarUsuario', UsuarioController.create);
+routers.get('/Usuario/ObterUsuario/:id', UsuarioController.getId);
+routers.post('/Usuario/Login', UsuarioController.login);
+routers.put('/Usuario/Update/:id', UsuarioController.update);
 
 export default routers;

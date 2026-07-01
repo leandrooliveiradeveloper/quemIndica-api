@@ -8,13 +8,24 @@ class UsuarioRepository {
         return consulta(sql, usuario, "Não foi possível criar o Usuario");
     }
 
-
     findById(id) {
         console.log("obter usuario id:" + id);
-        const sql = "SELECT * FROM usuario WHERE idUsuario = ?"; 
+        const sql = "SELECT idusuario, nome, email, dataCadastro, perfil, status, senha FROM usuario WHERE idUsuario = ?"; 
         return consulta(sql, id, "Não foi possível obter a lista de usuario");
+    }    
+
+    login(email, senha) {
+        console.log("logar usuario");
+        const sql = "SELECT idusuario, nome, email, dataCadastro, perfil, status FROM usuario WHERE email = ? and senha = ?";
+        return consulta(sql, [email, senha], "Não foi possível obter Usuario");
     }
-    
+
+    update(id, usuario) {
+        const sql = "UPDATE usuario SET ? WHERE idUsuario = ?";
+        return consulta(sql, [usuario, id], "Não foi possível atualizar a usuario");
+    }
+
+
     
     
     findAll() {
@@ -22,10 +33,7 @@ class UsuarioRepository {
         return consulta(sql, "Não foi possível obter a lista");
     }
 
-    update(id, usuario) {
-        const sql = "UPDATE usuario SET ? WHERE id = ?";
-        return consulta(sql, [selecao, id], "Não foi possível atualizar a usuario");
-    }
+
 
     delete(id) {
         const sql = "DELETE FROM usuario WHERE id = ?";

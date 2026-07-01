@@ -5,7 +5,7 @@ const conexao = mysql.createConnection({
   port: 3306,
   user: 'root',
   password: 'root',
-  database: 'bdcopa'
+  database: 'quemindica'
 });
 
 conexao.connect((err) => {
@@ -28,6 +28,7 @@ export const consulta = (sql, valores='', mensagemReject) => {
   return new Promise((resolve, reject) => {
       conexao.query(sql, valores, (error, results) => {
           if (error) {
+              console.log("Erro: " + error);
               return reject(mensagemReject || 'Erro ao executar consulta SQL: ' + error);
           }
           return resolve(results);

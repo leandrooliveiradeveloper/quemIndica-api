@@ -1,7 +1,7 @@
 import ProfissionalRepository from '../repositories/ProfissionalRepository.js';
 import { RequestResponse } from "../model/RequestResponse.js";
-import UsuarioController from './UsuarioController.js';
 import UsuarioRepository from '../repositories/UsuarioRepository.js';
+import CategoriaRepository from '../repositories/CategoriaRepository.js';
 
 class ProfissionalController {
 
@@ -18,38 +18,60 @@ class ProfissionalController {
             const usuario = req.body.usuario;
             const profissional = req.body;
 
-            const newUsuario = await UsuarioRepository.create(usuario);
+            const usuarioCreate = {
+                nome: usuario.nome,
+                email: usuario.email,
+                dataCadastro: usuario.dataCadastro,
+                perfil: usuario.perfil,
+                senha: usuario.senha,
+                status: usuario.status
+            }
+
+            const newUsuario = await UsuarioRepository.create(usuarioCreate);
             profissional.idusuario = newUsuario.insertId;
 
             if(profissional.idusuario > 0){
-            console.log("Profissional: " + profissional);
+                console.log("Profissional: " + profissional);
 
-            const profissionalCreate = {
-                descricao: profissional.descricao, 
-                uriImagemPrincipal: profissional.uriImagemPrincipal,
-                telefone: profissional.telefone,
-                disponibilidadeInicio: profissional.disponibilidadeInicio,
-                disponibilidadeFim: profissional.disponibilidadeFim,
-                avaliacaoMedia: profissional.avaliacaoMedia,
-                servico: profissional.servico,
-                rua: profissional.rua,
-                numero: profissional.numero,
-                bairro: profissional.bairro,
-                estado: profissional.estado,
-                cidade: profissional.cidade,
-                latitude: profissional.latitude,
-                idusuario: profissional.idusuario
-            };
-            
-            const newProfissional = await ProfissionalRepository.create(profissionalCreate);
-            console.log("newProfissional: " + newProfissional);
+                const profissionalCreate = {
+                    descricao: profissional.descricao, 
+                    uriImagemPrincipal: profissional.uriImagemPrincipal,
+                    telefone: profissional.telefone,
+                    disponibilidadeInicio: profissional.disponibilidadeInicio,
+                    disponibilidadeFim: profissional.disponibilidadeFim,
+                    avaliacaoMedia: profissional.avaliacaoMedia,
+                    servico: profissional.servico,
+                    rua: profissional.rua,
+                    numero: profissional.numero,
+                    bairro: profissional.bairro,
+                    estado: profissional.estado,
+                    cidade: profissional.cidade,
+                    latitude: profissional.latitude,
+                    idusuario: profissional.idusuario
+                };
+                
+                const newProfissional = await ProfissionalRepository.create(profissionalCreate);
+                profissionalCreate.id = newProfissional.insertId;
+                console.log("newProfissional: " + JSON.stringify(newProfissional));
 
-            response.status = 200;
-            response.id = newUsuario.insertId;
-            response.message = "Sucesso";
-            response.sucess = true;
-            response.objeto = profissionalCreate
-        }
+                console.log("listaCategoria: " + profissional.categorias);
+                
+                profissional.categorias.forEach(async element => {
+                    const adicionarUsuariocategoria = await CategoriaRepository.createByProfissional(newProfissional.insertId, element);
+                    console.log("Categoria: " + element);
+                    console.log("profissional.id: " + newProfissional.insertId);
+                });
+
+                profissionalCreate.id = newProfissional.insertId;
+                usuarioCreate.id = newUsuario.insertId;
+                profissionalCreate.usuario = usuarioCreate;
+
+                response.status = 200;
+                response.id = newUsuario.insertId;
+                response.message = "Sucesso";
+                response.sucess = true;
+                response.objeto = profissionalCreate
+            }
 
         }catch(error){
             response.status = 500;
@@ -115,7 +137,7 @@ class ProfissionalController {
 
         const response = new RequestResponse();
         response.status = 200;
-        response.message = "";
+        response.message = "Usuario não encontrado";
         response.sucess = false;
         response.objeto = null;
         response.id = 0;
@@ -128,56 +150,52 @@ class ProfissionalController {
             console.log("=================================================");
 
             const oldUsurio = await UsuarioRepository.findById(usuario.id);
-            const oldProfissional = await ProfissionalRepository.findById(req.params.id);
 
-            // console.log("oldProfissional: " + JSON.stringify(oldProfissional));
-            // console.log("=================================================");
+            if(oldUsurio.length > 0){
 
-            const usuarioUpdate = oldUsurio[0];
-            usuarioUpdate.nome = usuario.nome;
-            usuarioUpdate.email = usuario.email;       
-            usuarioUpdate.dataCadastro = usuario.dataCadastro; 
+                const oldProfissional = await ProfissionalRepository.findById(req.params.id);
 
-             const profissionalUpdate = {
-                 idprofissional: profissional.id,
-                 descricao: profissional.descricao, 
-                 uriImagemPrincipal: profissional.uriImagemPrincipal,
-                 telefone: profissional.telefone,
-                 disponibilidadeInicio: profissional.disponibilidadeInicio,
-                 disponibilidadeFim: profissional.disponibilidadeFim,
-                 avaliacaoMedia: profissional.avaliacaoMedia,
-                 servico: profissional.servico,
-                 rua: profissional.rua,
-                 numero: profissional.numero,
-                 bairro: profissional.bairro,
-                 estado: profissional.estado,
-                 cidade: profissional.cidade,
-                 latitude: profissional.latitude
-             };
+                const usuarioUpdate = oldUsurio[0];
+                usuarioUpdate.nome = usuario.nome;
+                usuarioUpdate.email = usuario.email;       
+                usuarioUpdate.dataCadastro = usuario.dataCadastro; 
 
-             if(oldProfissional.length > 0 && oldUsurio[0].senha === usuario.senha){
+                const profissionalUpdate = {
+                    idprofissional: profissional.id,
+                    descricao: profissional.descricao, 
+                    uriImagemPrincipal: profissional.uriImagemPrincipal,
+                    telefone: profissional.telefone,
+                    disponibilidadeInicio: profissional.disponibilidadeInicio,
+                    disponibilidadeFim: profissional.disponibilidadeFim,
+                    avaliacaoMedia: profissional.avaliacaoMedia,
+                    servico: profissional.servico,
+                    rua: profissional.rua,
+                    numero: profissional.numero,
+                    bairro: profissional.bairro,
+                    estado: profissional.estado,
+                    cidade: profissional.cidade,
+                    latitude: profissional.latitude
+                };
 
-                console.log("=================  ENTROU  ======================");
-            
-                const rowUsuario = await UsuarioRepository.update(usuario.id, usuarioUpdate);
-
-                console.log("rowUsuario: " + JSON.stringify(rowUsuario));
+                if(oldProfissional.length > 0 && oldUsurio[0].senha === usuario.senha){
                 
-                const row = await ProfissionalRepository.update(profissional.id, profissionalUpdate);
-
-                // console.log("=================================================");
-                // console.log("rowUsuario: " + JSON.stringify(rowUsuario));
-                // console.log("=================================================");
-                // console.log("row: " + JSON.stringify(row));
-                // console.log("=================================================");
-                 
-                  if(row.affectedRows > 0){
-                      response.id = parseInt(id);
-                      response.message = "Sucesso";
-                      response.sucess = true;
-                      response.objeto = profissional;
-                  }
-             }
+                    const rowUsuario = await UsuarioRepository.update(usuario.id, usuarioUpdate);
+                    const row = await ProfissionalRepository.update(profissional.id, profissionalUpdate);
+                    
+                    const apagarUsuarioCategoria = await CategoriaRepository.deleteByProfissional(profissional.id);
+                    profissional.categorias.forEach(async element => {
+                        const adicionarUsuariocategoria = await CategoriaRepository.createByProfissional(profissional.id, element);
+                        console.log("Categoria: " + element);
+                    });
+                    
+                    if(row.affectedRows > 0){
+                        response.id = parseInt(id);
+                        response.message = "Sucesso";
+                        response.sucess = true;
+                        response.objeto = profissional;
+                    }
+                }
+            }
         }catch(error){
             response.status = 500;
             response.message = error;

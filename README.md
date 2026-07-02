@@ -59,5 +59,20 @@ CREATE TABLE `quemindica`.`profissional` (
     ON UPDATE NO ACTION
 );
 
-INSERT INTO `quemindica`.`Profissional` (`idprofissional`, `descricao`, `uriImagemPrincipal`, `telefone`, `disponibilidadeInicio`, `disponibilidadeFim`, `avaliacaoMedia`, `servico`, `rua`, `numero`, `bairro`, `estado`, `cidade`, `idusuario`) VALUES ('1', 'Primeiro Profissional', 'https://loja.br.abb.com/media/mageplaza/blog/post/s/h/shutterstock_648385093.jpg', '21988445522', '08:00', '18:00', '0', 'Faxineiro, Cozinheiro, eletricista', 'Rua do Brasil', '5', 'Centro', 'BA', 'Itacaré', '1');
+CREATE TABLE `quemindica`.`profissional_categoria` (
+  `idprofissional` INT NOT NULL,
+  `idcategoria` INT NOT NULL,
+  INDEX `profissional_fk_idx` (`idprofissional` ASC) VISIBLE,
+  INDEX `categoria_fk_idx` (`idcategoria` ASC) VISIBLE,
+  CONSTRAINT `profissional_fk`
+    FOREIGN KEY (`idprofissional`)
+    REFERENCES `quemindica`.`profissional` (`idprofissional`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `categoria_fk`
+    FOREIGN KEY (`idcategoria`)
+    REFERENCES `quemindica`.`categoria` (`idcategoria`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
 

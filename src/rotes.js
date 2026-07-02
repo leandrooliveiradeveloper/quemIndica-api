@@ -24,6 +24,7 @@ routers.post('/Categoria/Cadastrar', CategoriaController.create);
 routers.get('/Categoria/ObterId/:id', CategoriaController.getId);
 routers.get('/Categoria/ObterTodos', CategoriaController.GetAll);
 routers.put('/Categoria/Update/:id', CategoriaController.update);
+routers.get('/Categoria/ObterTodosByProfissional/:id', CategoriaController.GetAllByProfissional);
 
 //PROFISSIONAL
 routers.post('/Profissional/Cadastrar', ProfissionalController.create);

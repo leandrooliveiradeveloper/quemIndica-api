@@ -23,8 +23,7 @@ class CategoriaController {
         res.json(response);
     }
 
-
-     async getId(req, res) {
+    async getId(req, res) {
         const response = new RequestResponse();
         response.objeto = null;
         response.id = 0;
@@ -46,7 +45,7 @@ class CategoriaController {
             response.message = "Error";
         }
         res.json(response);
-     }
+    }
 
     async login(req, res) {
         const response = new RequestResponse();
@@ -79,9 +78,7 @@ class CategoriaController {
         res.json(response);
     }
 
-
-
-     async update(req, res) {
+    async update(req, res) {
         
         const id = req.params.id;
         const categoria = req.body;
@@ -111,13 +108,17 @@ class CategoriaController {
             response.status = 500;
         }
          res.json(response);
-     }
+    }
 
     async GetAll(req, res) {
         const rows = await CategoriaRepository.findAll();
         res.json(rows);
     }
 
+    async GetAllByProfissional(req, res) {
+        const rows = await CategoriaRepository.findAllByProfissional(req.params.id);
+        res.json(rows);
+    }
 
 }
 

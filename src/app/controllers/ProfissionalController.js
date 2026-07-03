@@ -3,7 +3,22 @@ import { RequestResponse } from "../model/RequestResponse.js";
 import UsuarioRepository from '../repositories/UsuarioRepository.js';
 import CategoriaRepository from '../repositories/CategoriaRepository.js';
 
+import multer from 'multer';
+
+//UPLOAD DA IMAGEM
+// configuração do multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'src/imagens/'); // pasta onde salvar
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname); // nome único
+  }
+});
+const upload = multer({ storage });
+
 class ProfissionalController {
+    
 
     async create(req, res) {
 
@@ -80,7 +95,7 @@ class ProfissionalController {
         res.json(response);
     }
 
-     async getId(req, res) {
+    async getId(req, res) {
         const response = new RequestResponse();
         response.objeto = null;
         response.id = 0;
@@ -102,7 +117,7 @@ class ProfissionalController {
             response.message = "Error";
         }
         res.json(response);
-     }
+    }
 
     async getByUsuarioId(req, res) {
         const response = new RequestResponse();
@@ -126,10 +141,9 @@ class ProfissionalController {
             response.message = "Error";
         }
         res.json(response);
-     }
+    }
 
-
-     async update(req, res) {
+    async update(req, res) {
         
         const id = req.params.id;
         const profissional = req.body;
@@ -146,14 +160,14 @@ class ProfissionalController {
             console.log("=================================================");
             console.log("Profissional: " + JSON.stringify(profissional));
             console.log("=================================================");
-            console.log("usuario: " + JSON.stringify(usuario));
+            // console.log("usuario: " + JSON.stringify(usuario));
             console.log("=================================================");
 
             const oldUsurio = await UsuarioRepository.findById(usuario.id);
 
             if(oldUsurio.length > 0){
 
-                const oldProfissional = await ProfissionalRepository.findById(req.params.id);
+                const oldProfissional = await ProfissionalRepository.findById(profissional.id);
 
                 const usuarioUpdate = oldUsurio[0];
                 usuarioUpdate.nome = usuario.nome;
@@ -177,31 +191,66 @@ class ProfissionalController {
                     latitude: profissional.latitude
                 };
 
-                if(oldProfissional.length > 0 && oldUsurio[0].senha === usuario.senha){
+                 if(oldProfissional.length > 0 && oldUsurio[0].senha === usuario.senha){
                 
-                    const rowUsuario = await UsuarioRepository.update(usuario.id, usuarioUpdate);
-                    const row = await ProfissionalRepository.update(profissional.id, profissionalUpdate);
+                      const rowUsuario = await UsuarioRepository.update(usuario.id, usuarioUpdate);
+                      const row = await ProfissionalRepository.update(profissional.id, profissionalUpdate);
                     
-                    const apagarUsuarioCategoria = await CategoriaRepository.deleteByProfissional(profissional.id);
-                    profissional.categorias.forEach(async element => {
-                        const adicionarUsuariocategoria = await CategoriaRepository.createByProfissional(profissional.id, element);
-                        console.log("Categoria: " + element);
-                    });
+                      const apagarUsuarioCategoria = await CategoriaRepository.deleteByProfissional(profissional.id);
+                      profissional.categorias.forEach(async element => {
+                          const adicionarUsuariocategoria = await CategoriaRepository.createByProfissional(profissional.id, element);
+                          console.log("Categoria: " + element);
+                      });
                     
-                    if(row.affectedRows > 0){
-                        response.id = parseInt(id);
-                        response.message = "Sucesso";
-                        response.sucess = true;
-                        response.objeto = profissional;
-                    }
-                }
+                      if(row.affectedRows > 0){
+                          response.id = parseInt(id);
+                          response.message = "Sucesso";
+                          response.sucess = true;
+                          response.objeto = profissional;
+                      }
+                 }
             }
         }catch(error){
             response.status = 500;
             response.message = error;
         }
          res.json(response);
-     }
+    }
+
+    async updateImagem(req, res) {
+        const response = new RequestResponse();
+        response.status = 200;
+        response.message = "Nenhum arquivo enviado";
+        response.sucess = false;
+        response.objeto = null;
+        response.id = 0;
+
+        try {
+            if (!req.file) {
+            response.status = 400;
+            response.message = "Nenhum arquivo enviado";
+            return res.json(response);
+            }
+
+            const objeto = {
+            filename: req.file.filename,
+            path: req.file.path,
+            mimetype: req.file.mimetype,
+            size: req.file.size
+            };
+
+            response.message = "Upload feito com sucesso";
+            response.sucess = true;
+            response.objeto = objeto;
+
+            return res.json(response);
+        } catch (error) {
+            response.status = 500;
+            response.message = error.message;
+            return res.json(response);
+        }
+    }
+
 
 }
 

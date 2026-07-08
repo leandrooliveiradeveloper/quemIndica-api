@@ -37,23 +37,25 @@ routers.get('/Profissional/ObterByUsuario/:id', ProfissionalController.getByUsua
 
 
 
-
 //UPLOAD DA IMAGEM
-// configuração do multer
  const storage = multer.diskStorage({
    destination: function (req, file, cb) {
-     cb(null, 'src/imagens/'); // pasta onde salvar
+    //  cb(null, 'src/imagens/temp/');
+    const outputDir = process.env.UPLOAD_DIR_IMAGENS;
+    cb(null, outputDir + '/temp');
    },
    filename: function (req, file, cb) {
-     cb(null, file.originalname); // nome único
+     cb(null, file.originalname);
    }
  });
  const upload = multer({ storage });
 
 routers.put('/Profissional/UpdateImagem', upload.single('imagem'), (req, res) => {
+  // console.log("rotes UpdateImagem: " + JSON.stringify(req));
   ProfissionalController.updateImagem(req, res);
 });
 
+routers.delete('/Profissional/RemoverImagem/:id', ProfissionalController.RemoverImagem);
 
 
 

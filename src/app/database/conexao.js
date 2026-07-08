@@ -1,12 +1,12 @@
 import mysql from 'mysql';
 
-const conexao = mysql.createConnection({
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: 'root',
-  database: 'quemindica'
-});
+ const conexao = mysql.createConnection({
+   host: 'localhost',
+   port: 3306,
+   user: 'root',
+   password: 'root',
+   database: 'quemindica'
+ });
 
 conexao.connect((err) => {
   if (err) {

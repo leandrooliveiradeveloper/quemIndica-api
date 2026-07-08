@@ -4,18 +4,8 @@ import UsuarioRepository from '../repositories/UsuarioRepository.js';
 import CategoriaRepository from '../repositories/CategoriaRepository.js';
 
 import multer from 'multer';
-
-//UPLOAD DA IMAGEM
-// configuração do multer
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'src/imagens/'); // pasta onde salvar
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname); // nome único
-  }
-});
-const upload = multer({ storage });
+import sharp from 'sharp';
+import fs from 'fs';
 
 class ProfissionalController {
     
@@ -199,7 +189,6 @@ class ProfissionalController {
                       const apagarUsuarioCategoria = await CategoriaRepository.deleteByProfissional(profissional.id);
                       profissional.categorias.forEach(async element => {
                           const adicionarUsuariocategoria = await CategoriaRepository.createByProfissional(profissional.id, element);
-                          console.log("Categoria: " + element);
                       });
                     
                       if(row.affectedRows > 0){
@@ -226,18 +215,45 @@ class ProfissionalController {
         response.id = 0;
 
         try {
-            if (!req.file) {
-            response.status = 400;
-            response.message = "Nenhum arquivo enviado";
-            return res.json(response);
-            }
 
-            const objeto = {
-            filename: req.file.filename,
-            path: req.file.path,
-            mimetype: req.file.mimetype,
-            size: req.file.size
-            };
+              const outputDir = process.env.UPLOAD_DIR_IMAGENS;
+              if (!req.file || !fs.existsSync(outputDir)) {
+                  response.status = 400;
+                  response.message = "Nenhum arquivo enviado";
+                  return res.json(response);
+              }
+
+              const outputPath = `${outputDir}/${req.file.filename}`;
+              const outputPathTemp = `${outputDir}/temp/${req.file.filename}`;
+
+              if(req.file.filename.indexOf(".jpg")){
+                  await sharp(req.file.path)
+                  .resize({ width: 800 })
+                  .jpeg({ quality: 80 })
+                  .toFile(outputPath);
+              }else{
+                  await sharp(req.file.path)
+                  .resize({ width: 800 })
+                  .png({quality: 80})
+                  .toFile(outputPath);
+              }
+
+              fs.unlinkSync(outputPathTemp);
+
+              let stats = fs.statSync(outputPath);
+              let sizeInMB = stats.size / (1024 * 1024);
+
+              const objeto = {
+                  filename: req.file.filename,
+                  path: req.file.path,
+                  mimetype: req.file.mimetype,
+                  size: sizeInMB.toFixed(2)
+              };
+
+            //update url na tabela Profissional
+            console.log("req.body.id: " + req.body.id);
+            console.log("req.file.filename: " + req.file.filename);
+            await ProfissionalRepository.updateUrlImagem(req.file.filename, req.body.id);
 
             response.message = "Upload feito com sucesso";
             response.sucess = true;
@@ -251,6 +267,45 @@ class ProfissionalController {
         }
     }
 
+     async RemoverImagem(req, res) {
+        const response = new RequestResponse();
+        response.status = 200;
+        response.message = "Nenhum arquivo enviado";
+        response.sucess = false;
+        response.objeto = null;
+        response.id = 0;
+
+        try {
+
+            console.log("CHAMOU ");
+
+            const outputDir = process.env.UPLOAD_DIR_IMAGENS;
+
+            const row = await ProfissionalRepository.findById(req.params.id);
+
+            if(row.length > 0){
+
+                const profissional = row[0];
+
+                const outputPath = `${outputDir}/${profissional.uriImagemPrincipal}`;
+
+                console.log("outputPath: " + outputPath);
+
+                fs.unlinkSync(outputPath);
+
+                await ProfissionalRepository.updateUrlImagem("", req.params.id);
+            }
+
+            response.message = "Foto apagada com sucesso";
+            response.sucess = true;
+
+            return res.json(response);
+        } catch (error) {
+            response.status = 500;
+            response.message = error.message;
+            return res.json(response);
+        }
+    }
 
 }
 

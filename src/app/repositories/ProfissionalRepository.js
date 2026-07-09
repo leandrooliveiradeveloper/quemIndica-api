@@ -47,16 +47,60 @@ class ProfissionalRepository {
 
     findAllToCard() {
         console.log("CONTROLLER API findAllToCard profissional: ");
-        const sql = "SELECT p.idprofissional AS id, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, p.estado, p.avaliacaoMedia, GROUP_CONCAT(c.nome SEPARATOR ', ') AS categorias " +
-                    "FROM profissional AS p " +
-                    "INNER JOIN profissional_categoria AS uc ON uc.idprofissional = p.idprofissional " +
-                    "INNER JOIN categoria AS c ON c.idcategoria = uc.idcategoria " +
-                    "INNER JOIN usuario AS u ON u.idusuario = p.idusuario " +
-                    "WHERE u.status = 1 " +
-                    "GROUP BY p.idprofissional, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, p.estado, p.avaliacaoMedia " +
-                    "ORDER BY u.nome;"; 
+        const sql = `SELECT p.idprofissional AS id, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, p.estado, 
+                    p.avaliacaoMedia, GROUP_CONCAT(c.nome SEPARATOR ', ') AS categorias 
+                    FROM profissional AS p 
+                    INNER JOIN profissional_categoria AS uc ON uc.idprofissional = p.idprofissional 
+                    INNER JOIN categoria AS c ON c.idcategoria = uc.idcategoria 
+                    INNER JOIN usuario AS u ON u.idusuario = p.idusuario 
+                    WHERE u.status = 1 
+                    GROUP BY p.idprofissional, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, 
+                    p.estado, p.avaliacaoMedia 
+                    ORDER BY u.nome`
         return consulta(sql, "Não foi possível obter a lista");
     }
+
+
+    findToPerfil(id) {
+        console.log("CONTROLLER API findToPerfil profissional: ");
+        const sql = `SELECT p.idprofissional as id, u.nome, p.uriImagemPrincipal, p.telefone,
+                    p.cidade, p.estado, p.servico, p.descricao, p.avaliacaoMedia, p.bairro,
+                    GROUP_CONCAT(c.nome SEPARATOR ', ') AS categorias 
+                    FROM profissional AS p 
+                    INNER JOIN profissional_categoria AS uc ON uc.idprofissional = p.idprofissional 
+                    INNER JOIN categoria AS c ON c.idcategoria = uc.idcategoria 
+                    INNER JOIN usuario AS u ON u.idusuario = p.idusuario 
+                    WHERE u.status = 1 
+                    AND p.idprofissional = ${id} 
+                    GROUP BY p.idprofissional, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, 
+                    p.estado, p.servico, p.descricao, p.avaliacaoMedia, p.bairro`;
+        return consulta(sql, "Não foi possível obter a lista");
+    }
+
+    findAllFavoritoToCard(id) {
+        console.log("CONTROLLER API findAllFavoritoToCard profissional: ");
+        const sql = `SELECT p.idprofissional AS id, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, p.estado, 
+                    p.avaliacaoMedia, GROUP_CONCAT(c.nome SEPARATOR ', ') AS categorias 
+                    FROM profissional AS p 
+                    INNER JOIN profissional_categoria AS uc ON uc.idprofissional = p.idprofissional 
+                    INNER JOIN categoria AS c ON c.idcategoria = uc.idcategoria 
+                    INNER JOIN usuario AS u ON u.idusuario = p.idusuario 
+                    INNER JOIN favorito AS f ON f.idprofissional = p.idprofissional AND f.idusuario = ${id} 
+                    WHERE u.status = 1 
+                    GROUP BY p.idprofissional, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, 
+                    p.estado, p.avaliacaoMedia 
+                    ORDER BY u.nome`
+        return consulta(sql, "Não foi possível obter a lista");
+    }
+
+
+
+
+
+
+
+
+
 
 
 

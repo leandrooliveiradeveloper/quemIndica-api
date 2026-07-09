@@ -350,9 +350,50 @@ class ProfissionalController {
         res.json(response);
     }
 
+    async findToPerfil(req, res) {
 
+        const response = new RequestResponse();
+        response.objeto = null;
+        response.id = 0;
+        response.status = 200;
+        try{
+            const rows = await ProfissionalRepository.findToPerfil(req.params.id);
+            if(rows.length > 0){
+                response.message = "Sucesso";
+                response.sucess = true;
+                response.id = rows[0].id;
+                response.objeto = rows[0];
+            }else{
+                response.message = "Não existe este profissional cadastrado";
+            }
+        }catch(error){
+            response.status = 500;
+            response.message = error.message;
+        }
+        res.json(response);
+    }
 
+    async findAllFavoritoToCard(req, res) {
+        const response = new RequestResponse();
+        response.objeto = null;
+        response.id = 0;
+        response.status = 200;
 
+        try{
+             const rows = await ProfissionalRepository.findAllFavoritoToCard(req.params.id);
+             if(rows.length > 0){
+                 response.message = "Sucesso";
+                 response.sucess = true;
+                 response.objeto = rows;
+             }else{
+                 response.message = "Não existem profissionais cadastrado";
+             }
+        }catch(error){
+            response.status = 500;
+            response.message = error.message;
+        }
+        res.json(response);
+    }
     
 
 }

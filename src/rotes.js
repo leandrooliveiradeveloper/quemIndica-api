@@ -12,6 +12,8 @@ routers.post('/Usuario/CadastrarUsuario', UsuarioController.create);
 routers.get('/Usuario/ObterUsuario/:id', UsuarioController.getId);
 routers.post('/Usuario/Login', UsuarioController.login);
 routers.put('/Usuario/Update/:id', UsuarioController.update);
+routers.post('/Usuario/FavoritarProfissional', UsuarioController.createFavorito);
+routers.post('/Usuario/ObterFavorito', UsuarioController.getFavorito);
 
 //CATEGORIA
 routers.post('/Categoria/Cadastrar', CategoriaController.create);
@@ -25,14 +27,12 @@ routers.post('/Profissional/Cadastrar', ProfissionalController.create);
 routers.get('/Profissional/ObterId/:id', ProfissionalController.getId);
 routers.put('/Profissional/Update/:id', ProfissionalController.update);
 routers.get('/Profissional/ObterByUsuario/:id', ProfissionalController.getByUsuarioId);
+routers.get('/Profissional/ObterByFavoritos/:id', ProfissionalController.findAllFavoritoToCard);
 
 
 routers.get('/Profissional/ObterTodos', ProfissionalController.GetAll);
 routers.get('/Profissional/ObterTodosCard', ProfissionalController.findAllToCard);
-
-
-
-
+routers.get('/Profissional/ObterPerfil/:id', ProfissionalController.findToPerfil);
 
 
 

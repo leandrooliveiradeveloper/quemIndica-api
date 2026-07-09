@@ -111,35 +111,72 @@ class UsuarioController {
          res.json(response);
      }
 
+   async createFavorito(req, res) {
+
+        const response = new RequestResponse();
+        response.objeto = null;
+        console.log("req.body: " + JSON.stringify(req.body));
+
+        const idProfissional = req.body.idprofissional;
+        const idusuario = req.body.idusuario;
+
+        try{
+            let row = null;
+            const rowFavorito = await UsuarioRepository.findFavorito(idProfissional, idusuario);
+            console.log("rowFavorito: " + JSON.stringify(rowFavorito));
+            if(rowFavorito.length > 0){
+                row = await UsuarioRepository.deleteFavorito(idProfissional, idusuario);
+                response.sucess = false;
+            }else{
+                row = await UsuarioRepository.createFavorito(idProfissional, idusuario);
+                response.sucess = true;
+            }
+
+            response.status = 200;
+            response.id = 0;
+            response.message = "Sucesso";
+        }catch(error){
+            response.status = 500;
+            response.id = 0;
+            response.message = error.message;
+            response.sucess = false;
+        }
+        res.json(response);
+    }
 
 
+    async getFavorito(req, res) {
+        const response = new RequestResponse();
+        response.objeto = null;
+        response.id = 0;
+        response.status = 200;
 
+        const idProfissional = req.body.idprofissional;
+        const idusuario = req.body.idusuario;
 
+                console.log("idProfissional " + idProfissional);
+        console.log("idusuario " + idusuario);
 
-
-    // async index(req, res) {
-    //     const rows = await SelecaoRepository.findAll();
-    //     res.json(rows);
-    // }
-
-
-
-    // async store(req, res) {
-    //     const row = await SelecaoRepository.create(req.body);
-    //     res.json(row);
-    // }
-
-    // async update(req, res) {
-    //     const id = req.params.id;
-    //     const selecao = req.body;
-    //     const row = await SelecaoRepository.update(id, selecao);
-    //     res.json(row);
-    // }
-
-    // async delete(req, res) {
-    //     const row = await SelecaoRepository.delete(req.params.id);
-    //     res.json(row);
-    // }
+        try{
+            const row = await UsuarioRepository.findFavorito(idProfissional, idusuario);
+            
+            if(row.length > 0){
+                response.id = row.insertId;
+                response.message = "Sucesso";
+                response.sucess = true;
+                response.objeto = row[0];
+            }else{
+                response.id = row.insertId;
+                response.sucess = false;
+                response.message = "Este profisional não está selecionado como favorito";
+            }
+        }catch(error){
+            response.status = 500;
+            response.message = "Error";
+        }
+        res.json(response);
+     }
+    
 
 }
 

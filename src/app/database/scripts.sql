@@ -39,18 +39,35 @@ CREATE TABLE `quemindica`.`profissional` (
     ON UPDATE NO ACTION
 );
 
-CREATE TABLE `quemindica`.`profissional_categoria` (
+  CREATE TABLE `quemindica`.`profissional_categoria` (
+    `idprofissional` INT NOT NULL,
+    `idcategoria` INT NOT NULL,
+    INDEX `profissional_fk_idx` (`idprofissional` ASC) VISIBLE,
+    INDEX `categoria_fk_idx` (`idcategoria` ASC) VISIBLE,
+    CONSTRAINT `profissional_fk`
+      FOREIGN KEY (`idprofissional`)
+      REFERENCES `quemindica`.`profissional` (`idprofissional`)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+    CONSTRAINT `categoria_fk`
+      FOREIGN KEY (`idcategoria`)
+      REFERENCES `quemindica`.`categoria` (`idcategoria`)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION);
+
+
+CREATE TABLE `quemindica`.`favorito` (
+  `idusuario` INT NOT NULL,
   `idprofissional` INT NOT NULL,
-  `idcategoria` INT NOT NULL,
-  INDEX `profissional_fk_idx` (`idprofissional` ASC) VISIBLE,
-  INDEX `categoria_fk_idx` (`idcategoria` ASC) VISIBLE,
-  CONSTRAINT `profissional_fk`
+  INDEX `profissional_favorito_fk_idx` (`idprofissional` ASC) VISIBLE,
+  INDEX `usuario_favorito_fk_idx` (`idusuario` ASC) VISIBLE,
+  CONSTRAINT `profissional_favorito_fk`
     FOREIGN KEY (`idprofissional`)
     REFERENCES `quemindica`.`profissional` (`idprofissional`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `categoria_fk`
-    FOREIGN KEY (`idcategoria`)
-    REFERENCES `quemindica`.`categoria` (`idcategoria`)
+  CONSTRAINT `usuario_favorito_fk`
+    FOREIGN KEY (`idusuario`)
+    REFERENCES `quemindica`.`usuario` (`idusuario`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);

@@ -267,7 +267,7 @@ class ProfissionalController {
         }
     }
 
-     async RemoverImagem(req, res) {
+    async RemoverImagem(req, res) {
         const response = new RequestResponse();
         response.status = 200;
         response.message = "Nenhum arquivo enviado";
@@ -306,6 +306,54 @@ class ProfissionalController {
             return res.json(response);
         }
     }
+
+    async GetAll(req, res) {
+        const response = new RequestResponse();
+        response.objeto = null;
+        response.id = 0;
+        response.status = 200;
+        try{
+            const rows = await ProfissionalRepository.findAll();
+            if(rows.length > 0){
+                response.message = "Sucesso";
+                response.sucess = true;
+                response.objeto = rows;
+            }else{
+                response.message = "Não existem Profissionais cadastrados";
+            }
+        }catch(error){
+            response.status = 500;
+            response.message = error.message;
+        }
+        res.json(response);
+    }
+
+
+    async findAllToCard(req, res) {
+        const response = new RequestResponse();
+        response.objeto = null;
+        response.id = 0;
+        response.status = 200;
+        try{
+            const rows = await ProfissionalRepository.findAllToCard();
+            if(rows.length > 0){
+                response.message = "Sucesso";
+                response.sucess = true;
+                response.objeto = rows;
+            }else{
+                response.message = "Não existem profissionais cadastrado";
+            }
+        }catch(error){
+            response.status = 500;
+            response.message = error.message;
+        }
+        res.json(response);
+    }
+
+
+
+
+    
 
 }
 

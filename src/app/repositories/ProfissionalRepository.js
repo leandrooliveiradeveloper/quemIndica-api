@@ -26,11 +26,6 @@ class ProfissionalRepository {
         return consulta(sql, [profissional, id], "Não foi possível atualizar o profissional");
     }
 
-    findAll() {
-        console.log("CONTROLLER API findAll profissional: ");
-        return consulta(sql, "Não foi possível obter a lista");
-    }
-
     delete(id) {
         console.log("CONTROLLER API findByUsuarioId delete: " + id);
         const sql = "DELETE FROM profissional WHERE idprofissional = ?";
@@ -42,6 +37,30 @@ class ProfissionalRepository {
         const sql = "UPDATE profissional SET uriImagemPrincipal = ? WHERE idprofissional = ?";
         return consulta(sql, [url, idProfissional], "Não foi possível atualizar o profissional");
     }
+
+    findAll() {
+        console.log("CONTROLLER API findAll profissional: ");
+        const sql = "SELECT * FROM profissional"; 
+        return consulta(sql, "Não foi possível obter a lista");
+    }
+
+
+    findAllToCard() {
+        console.log("CONTROLLER API findAllToCard profissional: ");
+        const sql = "SELECT p.idprofissional AS id, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, p.estado, p.avaliacaoMedia, GROUP_CONCAT(c.nome SEPARATOR ', ') AS categorias " +
+                    "FROM profissional AS p " +
+                    "INNER JOIN profissional_categoria AS uc ON uc.idprofissional = p.idprofissional " +
+                    "INNER JOIN categoria AS c ON c.idcategoria = uc.idcategoria " +
+                    "INNER JOIN usuario AS u ON u.idusuario = p.idusuario " +
+                    "WHERE u.status = 1 " +
+                    "GROUP BY p.idprofissional, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, p.estado, p.avaliacaoMedia " +
+                    "ORDER BY u.nome;"; 
+        return consulta(sql, "Não foi possível obter a lista");
+    }
+
+
+
+    
 }
 
 export default new ProfissionalRepository();

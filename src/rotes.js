@@ -4,6 +4,7 @@ import UsuarioController from './app/controllers/UsuarioController.js';
 import CategoriaController from './app/controllers/CategoriaController.js';
 import ProfissionalController from './app/controllers/ProfissionalController.js';
 import multer from 'multer';
+import AvaliacaoController from './app/controllers/AvaliacaoController.js';
 
 const routers = Router();
 
@@ -35,7 +36,10 @@ routers.get('/Profissional/ObterTodosCard', ProfissionalController.findAllToCard
 routers.get('/Profissional/ObterPerfil/:id', ProfissionalController.findToPerfil);
 
 
-
+//AVALIACAO
+routers.post('/Avaliacao/Cadastrar', AvaliacaoController.create);
+routers.get('/Avaliacao/ObterId/:id', AvaliacaoController.getId);
+routers.get('/Avaliacao/ObterIdProfissional/:id', AvaliacaoController.getByIdProfissional);
 
 
 

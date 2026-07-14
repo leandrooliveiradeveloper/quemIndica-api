@@ -94,7 +94,11 @@ class ProfissionalRepository {
     }
 
 
-
+   updateAvaliacao(avaliacaoMedia, idProfissional) {
+        console.log("CONTROLLER API updateUrlImagem : " + idProfissional);
+        const sql = "UPDATE profissional SET avaliacaomedia = ? WHERE idprofissional = ?";
+        return consulta(sql, [avaliacaoMedia, idProfissional], "Não foi possível atualizar o profissional");
+    }
 
 
 

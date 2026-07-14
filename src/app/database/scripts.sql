@@ -23,7 +23,7 @@ CREATE TABLE `quemindica`.`profissional` (
   `telefone` VARCHAR(20) NOT NULL,
   `disponibilidadeInicio` VARCHAR(5) NOT NULL,
   `disponibilidadeFim` VARCHAR(5) NOT NULL,
-  `avaliacaoMedia` INT NOT NULL,
+  `avaliacaoMedia` FLOAT NOT NULL,
   `servico` VARCHAR(400) NOT NULL,
   `rua` VARCHAR(150) NULL,
   `numero` VARCHAR(10) NULL,
@@ -67,6 +67,27 @@ CREATE TABLE `quemindica`.`favorito` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `usuario_favorito_fk`
+    FOREIGN KEY (`idusuario`)
+    REFERENCES `quemindica`.`usuario` (`idusuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+CREATE TABLE `quemindica`.`avaliacao` (
+  `idavaliacao` INT NOT NULL AUTO_INCREMENT,
+  `estrelas` INT NOT NULL,
+  `comentario` VARCHAR(150) NOT NULL,
+  `data` DATETIME NOT NULL,
+  `idusuario` INT NOT NULL,
+  `idprofissional` INT NOT NULL,
+  PRIMARY KEY (`idavaliacao`),
+ INDEX `profissional_favorito_fk_idx` (`idprofissional` ASC) VISIBLE,
+  INDEX `usuario_favorito_fk_idx` (`idusuario` ASC) VISIBLE,
+  CONSTRAINT `profissional_avaliacao_fk`
+    FOREIGN KEY (`idprofissional`)
+    REFERENCES `quemindica`.`profissional` (`idprofissional`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `usuario_avaliacao_fk`
     FOREIGN KEY (`idusuario`)
     REFERENCES `quemindica`.`usuario` (`idusuario`)
     ON DELETE NO ACTION

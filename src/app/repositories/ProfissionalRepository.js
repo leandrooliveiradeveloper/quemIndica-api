@@ -63,7 +63,7 @@ class ProfissionalRepository {
 
     findToPerfil(id) {
         console.log("CONTROLLER API findToPerfil profissional: ");
-        const sql = `SELECT p.idprofissional as id, u.nome, p.uriImagemPrincipal, p.telefone,
+        const sql = `SELECT p.idprofissional as id, u.nome, u.idusuario, p.uriImagemPrincipal, p.telefone,
                     p.cidade, p.estado, p.servico, p.descricao, p.avaliacaoMedia, p.bairro,
                     GROUP_CONCAT(c.nome SEPARATOR ', ') AS categorias 
                     FROM profissional AS p 
@@ -72,7 +72,7 @@ class ProfissionalRepository {
                     INNER JOIN usuario AS u ON u.idusuario = p.idusuario 
                     WHERE u.status = 1 
                     AND p.idprofissional = ${id} 
-                    GROUP BY p.idprofissional, u.nome, p.uriImagemPrincipal, p.telefone, p.cidade, 
+                    GROUP BY p.idprofissional, u.nome, u.idusuario, p.uriImagemPrincipal, p.telefone, p.cidade, 
                     p.estado, p.servico, p.descricao, p.avaliacaoMedia, p.bairro`;
         return consulta(sql, "Não foi possível obter a lista");
     }

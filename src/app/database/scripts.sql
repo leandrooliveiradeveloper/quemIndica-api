@@ -14,6 +14,7 @@ CREATE TABLE `quemindica`.`categoria` (
   `idcategoria` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(50) NOT NULL,
   `status` INT NOT NULL,
+  `imagem` VARCHAR(45) NULL,
   PRIMARY KEY (`idcategoria`));
 
 CREATE TABLE `quemindica`.`profissional` (

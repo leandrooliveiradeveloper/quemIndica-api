@@ -216,7 +216,7 @@ class ProfissionalController {
 
         try {
 
-              const outputDir = process.env.UPLOAD_DIR_IMAGENS;
+              const outputDir = process.env.UPLOAD_DIR_IMG_PROFISSIONAL;
               if (!req.file || !fs.existsSync(outputDir)) {
                   response.status = 400;
                   response.message = "Nenhum arquivo enviado";
@@ -279,7 +279,7 @@ class ProfissionalController {
 
             console.log("CHAMOU ");
 
-            const outputDir = process.env.UPLOAD_DIR_IMAGENS;
+            const outputDir = process.env.UPLOAD_DIR_IMG_PROFISSIONAL;
 
             const row = await ProfissionalRepository.findById(req.params.id);
 

@@ -1,7 +1,7 @@
 # Getting Started
 
 1 - npm install
-2 - npm run dev
+npm run dev
 
 
 # rodar o projeto pela api no app localmente 

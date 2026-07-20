@@ -48,7 +48,7 @@ routers.get('/Avaliacao/ObterIdProfissional/:id', AvaliacaoController.getByIdPro
  const storage = multer.diskStorage({
    destination: function (req, file, cb) {
     //  cb(null, 'src/imagens/temp/');
-    const outputDir = process.env.UPLOAD_DIR_IMAGENS;
+    const outputDir = process.env.UPLOAD_DIR_IMG_PROFISSIONAL;
     cb(null, outputDir + '/temp');
    },
    filename: function (req, file, cb) {

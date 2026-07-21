@@ -19,8 +19,13 @@ class CategoriaRepository {
         return consulta(sql, [categoria, id], "Não foi possível atualizar a categoria");
     }
     
-    findAll() {
+    findAllAtivo() {
         const sql = "SELECT * FROM categoria WHERE status = 1 ORDER BY nome";
+        return consulta(sql, "Não foi possível obter a lista");
+    }
+
+    findAll() {
+        const sql = "SELECT * FROM categoria ORDER BY nome";
         return consulta(sql, "Não foi possível obter a lista");
     }
     
@@ -33,6 +38,7 @@ class CategoriaRepository {
     }
 
     delete(id) {
+        console.log("CHAMOU DELETE");
         const sql = "DELETE FROM categoria WHERE idcategoria = ?";
         return consulta(sql, id, "Não foi possível excluir a categoria");
     }

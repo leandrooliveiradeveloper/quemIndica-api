@@ -20,9 +20,11 @@ routers.get('/Usuario/ObterTodos', UsuarioController.GetAll);
 //CATEGORIA
 routers.post('/Categoria/Cadastrar', CategoriaController.create);
 routers.get('/Categoria/ObterId/:id', CategoriaController.getId);
+routers.get('/Categoria/ObterTodosAtivos', CategoriaController.GetAllAtivos);
 routers.get('/Categoria/ObterTodos', CategoriaController.GetAll);
 routers.put('/Categoria/Update/:id', CategoriaController.update);
 routers.get('/Categoria/ObterTodosByProfissional/:id', CategoriaController.GetAllByProfissional);
+routers.delete('/Categoria/DeleteById/:id', CategoriaController.DeleteById);
 
 //PROFISSIONAL
 routers.post('/Profissional/Cadastrar', ProfissionalController.create);

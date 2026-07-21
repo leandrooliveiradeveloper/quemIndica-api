@@ -92,8 +92,6 @@ class CategoriaController {
         try{
 
             const oldCategoria = await CategoriaRepository.findById(req.params.id);
-            console.log("oldCategoria", oldCategoria);
-            console.log("categoria", categoria);
 
             if(oldCategoria.length > 0 && oldCategoria[0].senha === categoria.senha){
                 const row = await CategoriaRepository.update(id, categoria);
@@ -114,10 +112,42 @@ class CategoriaController {
         const rows = await CategoriaRepository.findAll();
         res.json(rows);
     }
+    
+    async GetAllAtivos(req, res) {
+        const rows = await CategoriaRepository.findAllAtivo();
+        res.json(rows);
+    }
 
     async GetAllByProfissional(req, res) {
         const rows = await CategoriaRepository.findAllByProfissional(req.params.id);
         res.json(rows);
+    }
+
+
+    async DeleteById(req, res) {
+        const response = new RequestResponse();
+        response.objeto = null;
+        response.id = 0;
+        response.status = 200;
+        try{
+            const row = await CategoriaRepository.delete(req.params.id);
+
+            console.log("APAGAR: " + JSON.stringify(row));
+            
+            if(row.length > 0){
+                response.id = row.insertId;
+                response.message = "Sucesso";
+                response.sucess = true;
+                response.objeto = row[0];
+            }else{
+                response.id = row.insertId;
+                response.message = "Categoria não encontrada";
+            }
+        }catch(error){
+            response.status = 500;
+            response.message = "Error";
+        }
+        res.json(response);
     }
 
 }

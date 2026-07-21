@@ -178,7 +178,6 @@ class UsuarioController {
      }
 
     async GetAll(req, res) {
-        console.log("USUARIO GETALL");
         const rows = await UsuarioRepository.findAll();
         res.json(rows);
     }

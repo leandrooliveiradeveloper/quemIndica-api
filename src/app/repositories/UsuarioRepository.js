@@ -20,9 +20,21 @@ class UsuarioRepository {
         return consulta(sql, [email, senha], "Não foi possível obter Usuario");
     }
 
+    findSenhaEmail(email) {
+        console.log("findByEmail usuario");
+        const sql = "SELECT idusuario, senha, nome, email FROM usuario WHERE email = ?";
+        return consulta(sql, [email], "Não foi possível obter Usuario");
+    }
+
+    findByEmail(email) {
+        console.log("logar usuario");
+        const sql = "SELECT idusuario, nome, email, dataCadastro, perfil, status FROM usuario WHERE email = ?";
+        return consulta(sql, [email], "Não foi possível obter Usuario");
+    }
+
     update(id, usuario) {
-        const sql = "UPDATE usuario SET ? WHERE idusuario = ?";
-        return consulta(sql, [usuario, id], "Não foi possível atualizar a usuario");
+        const sql = "UPDATE usuario SET nome = ?, email = ? WHERE idusuario = ?";
+        return consulta(sql, [usuario.nome, usuario.email, id], "Não foi possível atualizar a usuario");
     }
 
     findAll() {
@@ -52,6 +64,12 @@ class UsuarioRepository {
         console.log("deletar favorito");
         const sql = "DELETE FROM favorito WHERE idprofissional = ? AND idusuario = ?";
         return consulta(sql, [idprofissional, idusuario], "Não foi possível criar o favorito");
+    }
+
+
+    updateSenha(senha, email) {
+        const sql = "UPDATE usuario SET senha = ? WHERE email = ?";
+        return consulta(sql, [senha, email], "Não foi possível atualizar a usuario");
     }
 
 }

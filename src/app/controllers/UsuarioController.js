@@ -1,8 +1,9 @@
 import UsuarioRepository from '../repositories/UsuarioRepository.js';
 import { RequestResponse } from "../model/RequestResponse.js";
+import PasswordService from "../utils/PasswordService.js";
+import EmailService from "../utils/EmailService.js";
 
 class UsuarioController {
-
 
     async create(req, res) {
 
@@ -10,15 +11,28 @@ class UsuarioController {
         response.objeto = null;
 
         try{
-            const row = await UsuarioRepository.create(req.body);
-            response.status = 200;
-            response.id = row.insertId;
-            response.message = "Sucesso";
-            response.sucess = true;
+
+            const rowEmail = await UsuarioRepository.findByEmail(req.body.email);
+
+            if(rowEmail.length == 0){
+                const hashedPassword = await PasswordService.hashPassword(req.body.senha);
+                const usuarioData = { ...req.body, senha: hashedPassword };
+                const row = await UsuarioRepository.create(usuarioData);
+
+                response.status = 200;
+                response.id = row.insertId;
+                response.message = "Sucesso";
+                response.sucess = true;
+            }else{
+                response.status = 500;
+                response.id = 0;
+                response.message = "Este e-mail já está cadastrado em nosso sistema";
+                response.sucess = false;
+            }
         }catch(error){
             response.status = 500;
             response.id = 0;
-            response.message = "Error";
+            response.message = "Erro: " + error;
             response.sucess = false;
         }
         res.json(response);
@@ -43,7 +57,7 @@ class UsuarioController {
             }
         }catch(error){
             response.status = 500;
-            response.message = "Error";
+            response.message = error;
         }
         res.json(response);
      }
@@ -56,8 +70,12 @@ class UsuarioController {
         response.message = "Não foi possível obter o usuario";
         response.sucess = false;
         try{
-            const row = await UsuarioRepository.login(req.body.email, req.body.senha);
-            if(row.length > 0){
+
+            const rowUsuarioEmail = await UsuarioRepository.findSenhaEmail(req.body.email);
+            const match = await PasswordService.verifyPassword(req.body.senha, rowUsuarioEmail[0].senha);
+            const row = await UsuarioRepository.findByEmail(req.body.email);
+
+            if(row.length > 0 && match){
                 response.status = 200;
                 response.id = row[0].idusuario;
                 response.message = "Sucesso";
@@ -72,7 +90,7 @@ class UsuarioController {
         }catch(error){
             response.status = 500;
             response.id = 0;
-            response.message = "Error";
+            response.message = error;
             response.sucess = false;
             response.objeto = null;
         }
@@ -91,12 +109,12 @@ class UsuarioController {
         response.objeto = null;
         response.id = 0;
         try{
-
+            
+            const rowUsuarioEmail = await UsuarioRepository.findSenhaEmail(req.body.email);
+            const match = await PasswordService.verifyPassword(req.body.senha, rowUsuarioEmail[0].senha);
             const oldUsuario = await UsuarioRepository.findById(req.params.id);
-            console.log("oldUsuario", oldUsuario);
-            console.log("usuario", usuario);
 
-            if(oldUsuario.length > 0 && oldUsuario[0].senha === usuario.senha){
+            if(oldUsuario.length > 0 && match){
                 const row = await UsuarioRepository.update(id, usuario);
                 if(row.affectedRows > 0){
                     response.id = parseInt(id);
@@ -107,6 +125,7 @@ class UsuarioController {
             }
         }catch(error){
             response.status = 500;
+            response.message = error;
         }
          res.json(response);
      }
@@ -180,6 +199,48 @@ class UsuarioController {
     async GetAll(req, res) {
         const rows = await UsuarioRepository.findAll();
         res.json(rows);
+    }
+    
+    async TrocarSenha(req, res){
+        const response = new RequestResponse();
+        response.objeto = null;
+        const email = req.body.email;
+
+        try{
+
+            console.log("TrocarSenha: " + email);
+
+            const senhaTemporaria = await EmailService.gerarSenhaTemporaria();
+            console.log("senhaTemporaria: " + senhaTemporaria);
+            const hashedPassword = await PasswordService.hashPassword(senhaTemporaria);
+            console.log("hashedPassword: " + hashedPassword);
+            const usuario = await UsuarioRepository.findByEmail(email);
+            console.log("usuario: " + JSON.stringify(usuario));
+
+            if(usuario.length > 0){
+                const row = await UsuarioRepository.updateSenha(hashedPassword, email);
+                await EmailService.enviarEmailReset(req.body.email, senhaTemporaria);
+
+                response.status = 200;
+                response.id = 1;
+                response.message = "Sucesso";
+                response.sucess = true;
+            }else{
+                response.status = 500;
+                response.id = 0;
+                response.message = "Email não enviado";
+                response.sucess = false;
+            }
+
+        }catch(error){
+                response.status = 500;
+                response.id = 0;
+                response.message = "Email não enviado: " + error;
+                response.sucess = false;
+        }
+
+        res.json(response);
+
     }
     
 

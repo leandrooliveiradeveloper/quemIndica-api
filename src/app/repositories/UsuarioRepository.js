@@ -47,7 +47,6 @@ class UsuarioRepository {
         return consulta(sql, id, "Não foi possível excluir a usuario");
     }
 
-
     findFavorito(idprofissional, idusuario) {
         console.log("findFavorito");
         const sql = "SELECT * FROM favorito WHERE idprofissional = ? AND idusuario = ?"; 
@@ -66,10 +65,14 @@ class UsuarioRepository {
         return consulta(sql, [idprofissional, idusuario], "Não foi possível criar o favorito");
     }
 
-
-    updateSenha(senha, email) {
+    updateSenhaByEmail(senha, email) {
         const sql = "UPDATE usuario SET senha = ? WHERE email = ?";
         return consulta(sql, [senha, email], "Não foi possível atualizar a usuario");
+    }
+
+    updateSenhaById(senha, id) {
+        const sql = "UPDATE usuario SET senha = ? WHERE idusuario = ?";
+        return consulta(sql, [senha, id], "Não foi possível atualizar a usuario");
     }
 
 }

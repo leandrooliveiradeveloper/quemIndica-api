@@ -32,8 +32,9 @@ class UsuarioController {
         }catch(error){
             response.status = 500;
             response.id = 0;
-            response.message = "Erro: " + error;
+            response.message = "Erro";
             response.sucess = false;
+            console.log("ERRO create: " + error);
         }
         res.json(response);
     }
@@ -57,7 +58,8 @@ class UsuarioController {
             }
         }catch(error){
             response.status = 500;
-            response.message = error;
+            response.message = "Usuário ou senha inválidos";
+            console.log("ERRO getId: " + error);
         }
         res.json(response);
      }
@@ -90,9 +92,10 @@ class UsuarioController {
         }catch(error){
             response.status = 500;
             response.id = 0;
-            response.message = error;
+            response.message = "Usuário ou senha inválidos";
             response.sucess = false;
             response.objeto = null;
+            console.log("ERRO login: " + error);
         }
         res.json(response);
     }
@@ -125,7 +128,7 @@ class UsuarioController {
             }
         }catch(error){
             response.status = 500;
-            response.message = error;
+            console.log("ERRO update: " + error);
         }
          res.json(response);
      }
@@ -201,14 +204,14 @@ class UsuarioController {
         res.json(rows);
     }
     
-    async TrocarSenha(req, res){
+    async RecuperarSenha(req, res){
         const response = new RequestResponse();
         response.objeto = null;
         const email = req.body.email;
 
         try{
 
-            console.log("TrocarSenha: " + email);
+            console.log("RecuperarSenha: " + email);
 
             const senhaTemporaria = await EmailService.gerarSenhaTemporaria();
             console.log("senhaTemporaria: " + senhaTemporaria);
@@ -218,7 +221,7 @@ class UsuarioController {
             console.log("usuario: " + JSON.stringify(usuario));
 
             if(usuario.length > 0){
-                const row = await UsuarioRepository.updateSenha(hashedPassword, email);
+                const row = await UsuarioRepository.updateSenhaByEmail(hashedPassword, email);
                 await EmailService.enviarEmailReset(req.body.email, senhaTemporaria);
 
                 response.status = 200;
@@ -243,6 +246,63 @@ class UsuarioController {
 
     }
     
+
+
+
+    async AlterarSenha(req, res){
+        const response = new RequestResponse();
+        response.objeto = null;
+        const id = req.body.id;
+        const senhaAtual = req.body.senhaAtual;
+        const senhaNova = req.body.senhaNova;
+
+        try{
+
+            const usuarioArr = await UsuarioRepository.findById(id);
+
+            if(usuarioArr.length > 0){
+
+                console.log("usuario: " + JSON.stringify(usuarioArr[0]));
+                console.log("senhaAtual: " + senhaAtual);
+                console.log("usuario.senha: " + usuarioArr[0].senha);
+
+                const existe = await PasswordService.verifyPassword(senhaAtual, usuarioArr[0].senha);
+                console.log("existe: " + existe );
+
+                const hashedPassword = await PasswordService.hashPassword(senhaNova);
+                console.log("hashedPassword: " + hashedPassword);
+                
+                 if(existe){
+                     const row = await UsuarioRepository.updateSenhaById(hashedPassword, id);
+                     response.status = 200;
+                     response.id = 1;
+                     response.message = "Senha alterada com sucesso";
+                     response.sucess = true;
+                 }else{
+                     response.status = 200;
+                     response.id = 0;
+                     response.message = "Favor informe a senha atual";
+                     response.sucess = false;
+                 }
+
+            }else{
+                response.status = 200;
+                response.id = 0;
+                response.message = "Usuário não encontrado";
+                response.sucess = false;
+            }
+
+        }catch(error){
+                response.status = 500;
+                response.id = 0;
+                response.message = "Usuário não encontrado";
+                response.sucess = false;
+                console.log("ERRO AlterarSenha: " + error);
+        }
+
+        res.json(response);
+
+    }
 
 }
 

@@ -16,7 +16,8 @@ routers.put('/Usuario/Update/:id', UsuarioController.update);
 routers.post('/Usuario/FavoritarProfissional', UsuarioController.createFavorito);
 routers.post('/Usuario/ObterFavorito', UsuarioController.getFavorito);
 routers.get('/Usuario/ObterTodos', UsuarioController.GetAll);
-routers.post('/Usuario/RecuperarSenha', UsuarioController.TrocarSenha);
+routers.post('/Usuario/RecuperarSenha', UsuarioController.RecuperarSenha);
+routers.post('/Usuario/AlterarSenha', UsuarioController.AlterarSenha);
 
 //CATEGORIA
 routers.post('/Categoria/Cadastrar', CategoriaController.create);

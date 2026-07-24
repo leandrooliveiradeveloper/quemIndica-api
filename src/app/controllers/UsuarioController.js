@@ -24,7 +24,7 @@ class UsuarioController {
                 response.message = "Sucesso";
                 response.sucess = true;
             }else{
-                response.status = 500;
+                response.status = 200;
                 response.id = 0;
                 response.message = "Este e-mail já está cadastrado em nosso sistema";
                 response.sucess = false;
@@ -114,11 +114,28 @@ class UsuarioController {
         try{
             
             const rowUsuarioEmail = await UsuarioRepository.findSenhaEmail(req.body.email);
+
+            console.log("rowUsuarioEmail: " + JSON.stringify(rowUsuarioEmail));
+
             const match = await PasswordService.verifyPassword(req.body.senha, rowUsuarioEmail[0].senha);
+
+            console.log("match: " + match);
+
             const oldUsuario = await UsuarioRepository.findById(req.params.id);
+
+            console.log("oldUsuario: " + JSON.stringify(oldUsuario));
+
+            if(oldUsuario[0].email !== usuario.email){
+                const usuarioEmail = await UsuarioRepository.findByEmail(usuario.email);
+                if(usuarioEmail.length > 0){
+                    response.message = "Você está tentando alterar o email de um usuário, mas este email já existe em nossa base.";
+                    return res.json(response);;
+                }
+            }
 
             if(oldUsuario.length > 0 && match){
                 const row = await UsuarioRepository.update(id, usuario);
+                console.log("row: " + JSON.stringify(row));
                 if(row.affectedRows > 0){
                     response.id = parseInt(id);
                     response.message = "Sucesso";
@@ -246,9 +263,6 @@ class UsuarioController {
 
     }
     
-
-
-
     async AlterarSenha(req, res){
         const response = new RequestResponse();
         response.objeto = null;

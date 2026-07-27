@@ -4,7 +4,6 @@ import UsuarioRepository from '../repositories/UsuarioRepository.js';
 import CategoriaRepository from '../repositories/CategoriaRepository.js';
 import PasswordService from "../utils/PasswordService.js";
 
-import multer from 'multer';
 import sharp from 'sharp';
 import fs from 'fs';
 

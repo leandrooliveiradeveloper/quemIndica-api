@@ -1,5 +1,6 @@
 import CategoriaRepository from '../repositories/CategoriaRepository.js';
 import { RequestResponse } from "../model/RequestResponse.js";
+import fs from 'fs';
 
 class CategoriaController {
 
@@ -91,10 +92,14 @@ class CategoriaController {
         response.id = 0;
         try{
 
+
+            console.log("imagem: " + JSON.stringify(req.body));
+
             const oldCategoria = await CategoriaRepository.findById(req.params.id);
 
             if(oldCategoria.length > 0 && oldCategoria[0].senha === categoria.senha){
                 const row = await CategoriaRepository.update(id, categoria);
+                
                 if(row.affectedRows > 0){
                     response.id = parseInt(id);
                     response.message = "Sucesso";
@@ -130,7 +135,17 @@ class CategoriaController {
         response.id = 0;
         response.status = 200;
         try{
+
+            const rowImg = await CategoriaRepository.findById(req.params.id);
+
             const row = await CategoriaRepository.delete(req.params.id);
+
+            const outputDir = process.env.UPLOAD_DIR_IMG_CATEGORIA;
+            const outputPath = `${outputDir}/${rowImg[0].imagem}`;
+
+            console.log("outputPath: " + outputPath);
+
+            fs.unlinkSync(outputPath);
 
             console.log("APAGAR: " + JSON.stringify(row));
             
@@ -149,6 +164,45 @@ class CategoriaController {
         }
         res.json(response);
     }
+
+    async updateImagem(req, res) {
+        const response = new RequestResponse();
+        response.status = 200;
+        response.message = "Nenhum arquivo enviado";
+        response.success = false;
+        response.objeto = null;
+        response.id = 0;
+
+        try {
+            if (!req.file) {
+                response.status = 400;
+                response.message = "Nenhum arquivo enviado";
+                return res.json(response);
+            }
+
+            const stats = fs.statSync(req.file.path);
+            const sizeInMB = stats.size / (1024 * 1024);
+
+            const objeto = {
+                filename: req.file.filename,
+                path: req.file.path,
+                mimetype: req.file.mimetype,
+                size: sizeInMB.toFixed(2)
+            };
+
+            response.message = "Upload feito com sucesso";
+            response.success = true;
+            response.objeto = objeto;
+
+            return res.json(response);
+        } catch (error) {
+            response.status = 500;
+            response.message = error.message;
+            return res.json(response);
+        }
+    }
+
+
 
 }
 

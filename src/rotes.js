@@ -52,7 +52,6 @@ routers.get('/Avaliacao/ObterIdProfissional/:id', AvaliacaoController.getByIdPro
 //UPLOAD DA IMAGEM
  const storage = multer.diskStorage({
    destination: function (req, file, cb) {
-    //  cb(null, 'src/imagens/temp/');
     const outputDir = process.env.UPLOAD_DIR_IMG_PROFISSIONAL;
     cb(null, outputDir + '/temp');
    },
@@ -63,13 +62,28 @@ routers.get('/Avaliacao/ObterIdProfissional/:id', AvaliacaoController.getByIdPro
  const upload = multer({ storage });
 
 routers.put('/Profissional/UpdateImagem', upload.single('imagem'), (req, res) => {
-  // console.log("rotes UpdateImagem: " + JSON.stringify(req));
   ProfissionalController.updateImagem(req, res);
 });
 
 routers.delete('/Profissional/RemoverImagem/:id', ProfissionalController.RemoverImagem);
 
 
+
+//UPLOAD DA IMAGEM
+ const storageCategoria = multer.diskStorage({
+   destination: function (req, file, cb) {
+    const outputDir = process.env.UPLOAD_DIR_IMG_CATEGORIA;
+    cb(null, outputDir);
+   },
+   filename: function (req, file, cb) {
+     cb(null, file.originalname);
+   }
+ });
+ const uploadCategoria = multer({ storage: storageCategoria });
+
+ routers.put('/Categoria/UpdateImagem', uploadCategoria.single('imagem'), (req, res) => {
+  CategoriaController.updateImagem(req, res);
+});
 
 
 export default routers;

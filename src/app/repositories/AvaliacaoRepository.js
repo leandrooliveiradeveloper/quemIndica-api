@@ -29,6 +29,12 @@ class AvaliacaoRepository {
         return consulta(sql, id, "Não foi possível obter a lista de avaliacao");
     } 
 
+    delete(id) {
+        console.log("CHAMOU DELETE");
+        const sql = "DELETE FROM avaliacao WHERE idavaliacao = ?";
+        return consulta(sql, id, "Não foi possível excluir a avaliacao");
+    }
+
 }
 
 export default new AvaliacaoRepository();

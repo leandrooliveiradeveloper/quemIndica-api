@@ -45,6 +45,7 @@ routers.get('/Profissional/ObterPerfil/:id', ProfissionalController.findToPerfil
 routers.post('/Avaliacao/Cadastrar', AvaliacaoController.create);
 routers.get('/Avaliacao/ObterId/:id', AvaliacaoController.getId);
 routers.get('/Avaliacao/ObterIdProfissional/:id', AvaliacaoController.getByIdProfissional);
+routers.delete('/Avaliacao/DeleteById/:id', AvaliacaoController.DeleteById);
 
 
 

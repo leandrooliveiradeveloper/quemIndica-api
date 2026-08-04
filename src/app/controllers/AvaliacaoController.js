@@ -96,6 +96,33 @@ class AvaliacaoController {
         res.json(response);
      }
 
+    async DeleteById(req, res) {
+        const response = new RequestResponse();
+        response.objeto = null;
+        response.id = 0;
+        response.status = 200;
+        try{
+
+            const row = await AvaliacaoRepository.delete(req.params.id);
+
+            console.log("row delete: " + JSON.stringify(row));
+        
+            if(row.affectedRows > 0){
+                response.id = row.insertId;
+                response.message = "Sucesso";
+                response.sucess = true;
+                response.objeto = row[0];
+            }else{
+                response.id = row.insertId;
+                response.message = "Avaliação não encontrada";
+            }
+        }catch(error){
+            response.status = 500;
+            response.message = "Error";
+        }
+        res.json(response);
+    }
+
 }
 
 export default new AvaliacaoController();

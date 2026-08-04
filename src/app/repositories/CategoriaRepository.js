@@ -20,16 +20,19 @@ class CategoriaRepository {
     }
     
     findAllAtivo() {
+        console.log("findAllAtivo");
         const sql = "SELECT * FROM categoria WHERE status = 1 ORDER BY nome";
         return consulta(sql, "Não foi possível obter a lista");
     }
 
     findAll() {
+        console.log("findAll");
         const sql = "SELECT * FROM categoria ORDER BY nome";
         return consulta(sql, "Não foi possível obter a lista");
     }
     
     findAllByProfissional(id) {
+        console.log("findAllByProfissional");
         const sql = "SELECT c.idcategoria FROM profissional as u " +
                     "INNER JOIN profissional_categoria as uc on uc.idprofissional = u.idprofissional " +
                     "INNER JOIN categoria as c on c.idcategoria = uc.idcategoria " +

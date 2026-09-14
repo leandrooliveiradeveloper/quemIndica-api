@@ -33,6 +33,8 @@ CREATE TABLE `quemindica`.`profissional` (
   `cidade` VARCHAR(45) NOT NULL,
   `latitude` VARCHAR(45) NULL,
   `idusuario` INT NOT NULL,
+  `cliques` INT NOT NULL DEFAULT 0,
+  `status` INT NOT NULL DEFAULT 1,
   PRIMARY KEY (`idprofissional`),
   CONSTRAINT `idusuario_fk`
     FOREIGN KEY (`idusuario`) REFERENCES `quemindica`.`usuario` (`idusuario`)

@@ -200,7 +200,8 @@ class ProfissionalController {
                     bairro: profissional.bairro,
                     estado: profissional.estado,
                     cidade: profissional.cidade,
-                    latitude: profissional.latitude
+                    latitude: profissional.latitude,
+                    status: profissional.status,
                 };
 
                 if(oldProfissional.length > 0){
@@ -350,7 +351,6 @@ class ProfissionalController {
         res.json(response);
     }
 
-
     async findAllToCard(req, res) {
         const response = new RequestResponse();
         response.objeto = null;
@@ -416,7 +416,54 @@ class ProfissionalController {
         }
         res.json(response);
     }
+
+    async updateCliques(req, res) {
+        
+        const id = req.params.id;
+        const response = new RequestResponse();
+        response.status = 200;
+        response.message = "Usuario não encontrado";
+        response.sucess = false;
+        response.objeto = null;
+        response.id = 0;
+
+        try{
+
+            const cliques = await ProfissionalRepository.updateClique(id);
+            if(cliques.affectedRows > 0){
+                response.id = parseInt(id);
+                response.message = "Sucesso";
+                response.sucess = true;
+            }
+           
+        }catch(error){
+            response.status = 500;
+            response.message = error;
+        }
+         res.json(response);
+    }
     
+
+    async findAllClicados(req, res) {
+        const response = new RequestResponse();
+        response.objeto = null;
+        response.id = 0;
+        response.status = 200;
+        try{
+            const rows = await ProfissionalRepository.findAllClicado();
+            if(rows.length > 0){
+                response.message = "Sucesso";
+                response.sucess = true;
+                response.objeto = rows;
+            }else{
+                response.message = "Não existem profissionais cadastrado";
+            }
+        }catch(error){
+            response.status = 500;
+            response.message = error.message;
+        }
+        res.json(response);
+    }
 
 }
 

@@ -34,7 +34,8 @@ routers.get('/Profissional/ObterId/:id', ProfissionalController.getId);
 routers.put('/Profissional/Update/:id', ProfissionalController.update);
 routers.get('/Profissional/ObterByUsuario/:id', ProfissionalController.getByUsuarioId);
 routers.get('/Profissional/ObterByFavoritos/:id', ProfissionalController.findAllFavoritoToCard);
-
+routers.put('/Profissional/updateCliques/:id', ProfissionalController.updateCliques);
+routers.get('/Profissional/ObterClicados', ProfissionalController.findAllClicados);
 
 routers.get('/Profissional/ObterTodos', ProfissionalController.GetAll);
 routers.get('/Profissional/ObterTodosCard', ProfissionalController.findAllToCard);

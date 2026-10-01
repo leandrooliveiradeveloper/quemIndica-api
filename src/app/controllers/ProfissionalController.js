@@ -3,6 +3,7 @@ import { RequestResponse } from "../model/RequestResponse.js";
 import UsuarioRepository from '../repositories/UsuarioRepository.js';
 import CategoriaRepository from '../repositories/CategoriaRepository.js';
 import PasswordService from "../utils/PasswordService.js";
+import CloudinaryService from "../utils/CloudinaryService.js";
 
 import sharp from 'sharp';
 import fs from 'fs';
@@ -250,49 +251,35 @@ class ProfissionalController {
         response.id = 0;
 
         try {
+            if (!req.file) {
+                response.status = 400;
+                response.message = "Nenhum arquivo enviado";
+                return res.json(response);
+            }
 
-              const outputDir = process.env.UPLOAD_DIR_IMG_PROFISSIONAL;
-              if (!req.file || !fs.existsSync(outputDir)) {
-                  response.status = 400;
-                  response.message = "Nenhum arquivo enviado";
-                  return res.json(response);
-              }
+            const profissionalAtual = await ProfissionalRepository.findById(req.body.id);
+            if (profissionalAtual.length > 0 && profissionalAtual[0].uriimagemprincipal) {
+                await CloudinaryService.deleteByUrl(profissionalAtual[0].uriimagemprincipal);
+            }
 
-              const outputPath = `${outputDir}/${req.file.filename}`;
-              const outputPathTemp = `${outputDir}/temp/${req.file.filename}`;
+            const uploadResult = await CloudinaryService.uploadFile(req.file, 'quem-indica/profissional');
 
-              if(req.file.filename.indexOf(".jpg")){
-                  await sharp(req.file.path)
-                  .resize({ width: 800 })
-                  .jpeg({ quality: 80 })
-                  .toFile(outputPath);
-              }else{
-                  await sharp(req.file.path)
-                  .resize({ width: 800 })
-                  .png({quality: 80})
-                  .toFile(outputPath);
-              }
+            await ProfissionalRepository.updateUrlImagem(uploadResult.secure_url, req.body.id);
 
-              fs.unlinkSync(outputPathTemp);
-
-              let stats = fs.statSync(outputPath);
-              let sizeInMB = stats.size / (1024 * 1024);
-
-              const objeto = {
-                  filename: req.file.filename,
-                  path: req.file.path,
-                  mimetype: req.file.mimetype,
-                  size: sizeInMB.toFixed(2)
-              };
-
-            //update url na tabela Profissional
-            console.log("req.body.id: " + req.body.id);
-            console.log("req.file.filename: " + req.file.filename);
-            await ProfissionalRepository.updateUrlImagem(req.file.filename, req.body.id);
+            const objeto = {
+                filename: req.file.originalname,
+                url: uploadResult.secure_url,
+                publicId: uploadResult.public_id,
+                mimetype: req.file.mimetype,
+                size: req.file.size,
+                width: uploadResult.width,
+                height: uploadResult.height
+            };
 
             response.message = "Upload feito com sucesso";
             response.sucess = true;
             response.objeto = objeto;
+            response.id = Number(req.body.id);
 
             return res.json(response);
         } catch (error) {
@@ -311,28 +298,21 @@ class ProfissionalController {
         response.id = 0;
 
         try {
-
-            console.log("CHAMOU ");
-
-            const outputDir = process.env.UPLOAD_DIR_IMG_PROFISSIONAL;
-
             const row = await ProfissionalRepository.findById(req.params.id);
 
-            if(row.length > 0){
-
+            if (row.length > 0) {
                 const profissional = row[0];
 
-                const outputPath = `${outputDir}/${profissional.uriImagemPrincipal}`;
+                if (profissional.uriimagemprincipal) {
+                    await CloudinaryService.deleteByUrl(profissional.uriimagemprincipal);
+                }
 
-                console.log("outputPath: " + outputPath);
-
-                fs.unlinkSync(outputPath);
-
-                await ProfissionalRepository.updateUrlImagem("", req.params.id);
+                await ProfissionalRepository.updateUrlImagem('', req.params.id);
             }
 
             response.message = "Foto apagada com sucesso";
             response.sucess = true;
+            response.id = Number(req.params.id);
 
             return res.json(response);
         } catch (error) {

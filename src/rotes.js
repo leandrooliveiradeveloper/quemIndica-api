@@ -52,16 +52,11 @@ routers.delete('/Avaliacao/DeleteById/:id', AvaliacaoController.DeleteById);
 
 
 //UPLOAD DA IMAGEM
- const storage = multer.diskStorage({
-   destination: function (req, file, cb) {
-    const outputDir = process.env.UPLOAD_DIR_IMG_PROFISSIONAL;
-    cb(null, outputDir + '/temp');
-   },
-   filename: function (req, file, cb) {
-     cb(null, file.originalname);
-   }
- });
- const upload = multer({ storage });
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
 
 routers.put('/Profissional/UpdateImagem', upload.single('imagem'), (req, res) => {
   ProfissionalController.updateImagem(req, res);
@@ -72,18 +67,13 @@ routers.delete('/Profissional/RemoverImagem/:id', ProfissionalController.Remover
 
 
 //UPLOAD DA IMAGEM
- const storageCategoria = multer.diskStorage({
-   destination: function (req, file, cb) {
-    const outputDir = process.env.UPLOAD_DIR_IMG_CATEGORIA;
-    cb(null, outputDir);
-   },
-   filename: function (req, file, cb) {
-     cb(null, file.originalname);
-   }
- });
- const uploadCategoria = multer({ storage: storageCategoria });
+const storageCategoria = multer.memoryStorage();
+const uploadCategoria = multer({
+  storage: storageCategoria,
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
 
- routers.put('/Categoria/UpdateImagem', uploadCategoria.single('imagem'), (req, res) => {
+routers.put('/Categoria/UpdateImagem', uploadCategoria.single('imagem'), (req, res) => {
   CategoriaController.updateImagem(req, res);
 });
 

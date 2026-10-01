@@ -1,6 +1,6 @@
 import CategoriaRepository from '../repositories/CategoriaRepository.js';
 import { RequestResponse } from "../model/RequestResponse.js";
-import fs from 'fs';
+import CloudinaryService from "../utils/CloudinaryService.js";
 
 class CategoriaController {
 
@@ -136,15 +136,11 @@ class CategoriaController {
         try{
 
             const rowImg = await CategoriaRepository.findById(req.params.id);
+            if (rowImg.length > 0 && rowImg[0].imagem) {
+                await CloudinaryService.deleteByUrl(rowImg[0].imagem);
+            }
 
             const row = await CategoriaRepository.delete(req.params.id);
-
-            const outputDir = process.env.UPLOAD_DIR_IMG_CATEGORIA;
-            const outputPath = `${outputDir}/${rowImg[0].imagem}`;
-
-            console.log("outputPath: " + outputPath);
-
-            fs.unlinkSync(outputPath);
 
             console.log("APAGAR: " + JSON.stringify(row));
             
@@ -168,7 +164,7 @@ class CategoriaController {
         const response = new RequestResponse();
         response.status = 200;
         response.message = "Nenhum arquivo enviado";
-        response.success = false;
+        response.sucess = false;
         response.objeto = null;
         response.id = 0;
 
@@ -179,19 +175,36 @@ class CategoriaController {
                 return res.json(response);
             }
 
-            const stats = fs.statSync(req.file.path);
-            const sizeInMB = stats.size / (1024 * 1024);
+            const categoriaAtual = await CategoriaRepository.findById(req.body.id);
+            if (categoriaAtual.length > 0 && categoriaAtual[0].imagem) {
+                await CloudinaryService.deleteByUrl(categoriaAtual[0].imagem);
+            }
+
+            const uploadResult = await CloudinaryService.uploadFile(req.file, 'quem-indica/categoria');
+            const categoriaAtualizada = categoriaAtual.length > 0 ? categoriaAtual[0] : { nome: '', status: 1 }; 
+
+            const categoria = {
+                nome: categoriaAtualizada.nome,
+                status: categoriaAtualizada.status,
+                imagem: uploadResult.secure_url
+            };
+
+            await CategoriaRepository.update(req.body.id, categoria);
 
             const objeto = {
-                filename: req.file.filename,
-                path: req.file.path,
+                filename: req.file.originalname,
+                url: uploadResult.secure_url,
+                publicId: uploadResult.public_id,
                 mimetype: req.file.mimetype,
-                size: sizeInMB.toFixed(2)
+                size: req.file.size,
+                width: uploadResult.width,
+                height: uploadResult.height
             };
 
             response.message = "Upload feito com sucesso";
-            response.success = true;
+            response.sucess = true;
             response.objeto = objeto;
+            response.id = Number(req.body.id);
 
             return res.json(response);
         } catch (error) {

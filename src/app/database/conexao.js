@@ -2,7 +2,7 @@ import 'dotenv/config';
 import pkg from 'pg';
 const { Pool } = pkg;
 
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://quemindica_user:4CDVTnBTYM4Xn2o9p0QupXgG7XYnuqXr@dpg-dau1oo6k1f9s73a18ql0-a.oregon-postgres.render.com/quemindica';
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://quemindica_fwgf_user:aCkxkdtNcrUatYqSkvYIvuZQ7YZXw5eL@dpg-dbuden8m7kps73c33e4g-a/quemindica_fwgf';
 
 const conexao = new Pool({
   connectionString: DATABASE_URL,
